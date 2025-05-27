@@ -1,6 +1,5 @@
 package org.example.watchstack.entity;
 
-import jakarta.annotation.Priority;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -22,7 +21,8 @@ public class WatchlistItem {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private PriorityType priorityType;
+    @Column(nullable = false)
+    private PriorityType priority;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", nullable = false)
