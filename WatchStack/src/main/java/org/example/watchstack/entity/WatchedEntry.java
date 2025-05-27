@@ -1,15 +1,19 @@
 package org.example.watchstack.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Check;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Check(constraints = "rating >= 1 AND rating <= 10")
 @Table(name = "watched_entries")
 public class WatchedEntry {
     @Id
@@ -27,6 +31,9 @@ public class WatchedEntry {
     @Column(name = "watched_at", nullable = false)
     private LocalDateTime watchedAt;
 
+    @Min(1)
+    @Max(10)
+    @Column(nullable = false)
     private Integer rating;
 
     @Column(columnDefinition = "TEXT")
