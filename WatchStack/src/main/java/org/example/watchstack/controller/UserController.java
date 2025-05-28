@@ -19,6 +19,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+
     @GetMapping
     @Operation(summary = "Retrieve all users", description = "Returns a list of all users from the database")
     public List<User> getAllUsers() {
