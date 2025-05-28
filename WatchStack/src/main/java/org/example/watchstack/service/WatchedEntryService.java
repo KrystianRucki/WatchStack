@@ -2,7 +2,6 @@ package org.example.watchstack.service;
 
 import org.example.watchstack.entity.WatchedEntry;
 import org.example.watchstack.repository.WatchedEntryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import java.util.NoSuchElementException;
 @Service
 public class WatchedEntryService {
 
-    @Autowired
-    private WatchedEntryRepository watchedEntryRepository;
+    private final WatchedEntryRepository watchedEntryRepository;
+
+    public WatchedEntryService(WatchedEntryRepository watchedEntryRepository) {
+        this.watchedEntryRepository = watchedEntryRepository;
+    }
 
     public List<WatchedEntry> getAllEntries() {
         return watchedEntryRepository.findAll();

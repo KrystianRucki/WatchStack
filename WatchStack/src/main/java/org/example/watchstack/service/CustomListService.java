@@ -2,7 +2,6 @@ package org.example.watchstack.service;
 
 import org.example.watchstack.entity.CustomList;
 import org.example.watchstack.repository.CustomListRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import java.util.NoSuchElementException;
 @Service
 public class CustomListService {
 
-    @Autowired
-    private CustomListRepository customListRepository;
+    private final CustomListRepository customListRepository;
+
+    public CustomListService(CustomListRepository customListRepository) {
+        this.customListRepository = customListRepository;
+    }
 
     public List<CustomList> getAllLists() {
         return customListRepository.findAll();
