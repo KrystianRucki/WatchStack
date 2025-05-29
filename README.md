@@ -230,7 +230,7 @@ Po uruchomieniu dostępne pod: **[http://localhost:8080/swagger-ui.html](http://
 * Przykładowe wywołanie GET z Movies
   ![GET Movies](screenshots/get.png)
 * Diagram ERD
-  ![Diagram ERD](screenshots/Diagram ERD.png)
+  ![Diagram ERD](screenshots/ERD.png)
 * Testy jednostkowe
   ![JaCoCo unit coverage](screenshots/unit.png)
 * Testy integracyjne

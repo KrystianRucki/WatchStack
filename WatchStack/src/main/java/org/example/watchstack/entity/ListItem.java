@@ -1,5 +1,6 @@
 package org.example.watchstack.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +18,12 @@ public class ListItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "custom_list_id", nullable = false)
+    @JsonBackReference("customlist-listitem")
     private CustomList customList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id", nullable = false)
+    @JsonBackReference("movie-listitem")
     private Movie movie;
 
     private Integer position;

@@ -1,5 +1,7 @@
 package org.example.watchstack.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,7 @@ public class CustomList {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference("user-customlist")
     private User user;
 
     @Column(nullable = false)
@@ -27,5 +30,6 @@ public class CustomList {
     private String description;
 
     @OneToMany(mappedBy = "customList", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("customlist-listitem")
     private Set<ListItem> items = new HashSet<>();
 }
