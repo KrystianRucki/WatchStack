@@ -268,4 +268,8 @@ W projekcie zastosowano następujące wzorce projektowe:
 
     * Metody Spring Data JPA (`saveAll()`, `findAll()` itd.) implementujące schematyczne operacje na bazie danych.
 
+7. **Data Transfer Object (DTO)**
+
+    * Klasy DTO (`MovieDto`, `UserDto`, `WatchedEntryDto`, itd.) służą do przenoszenia danych pomiędzy warstwami aplikacji, izolując wewnętrzną strukturę encji od interfejsu API.
+
 ---
