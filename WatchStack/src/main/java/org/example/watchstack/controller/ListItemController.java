@@ -1,62 +1,59 @@
 package org.example.watchstack.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.example.watchstack.dto.ListItemDto;
 import org.example.watchstack.entity.ListItem;
+import org.example.watchstack.mapper.ListItemMapper;
 import org.example.watchstack.service.ListItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/list-items")
-@Tag(name = "ListItems", description = "Operations for managing list items")
+@Tag(name = "ListItems", description = "Manage List Items")
 public class ListItemController {
 
     @Autowired
-    private ListItemService listItemService;
+    private ListItemService service;
 
     @GetMapping
-    @Operation(summary = "Retrieve all list items", description = "Returns a list of all list items")
-    public List<ListItem> getAllListItems() {
-        return listItemService.getAllItems();
+    @Operation(summary = "Get all list items")
+    public List<ListItemDto> getAll() {
+        return service.getAllItems().stream()
+                .map(ListItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get list item by ID", description = "Returns list item details by ID")
-    public ResponseEntity<ListItem> getListItemById(
-            @Parameter(description = "ID of the list item to retrieve", example = "1")
-            @PathVariable Long id) {
-        return ResponseEntity.ok(listItemService.getItemById(id));
+    @Operation(summary = "Get a list item by ID")
+    public ResponseEntity<ListItemDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ListItemMapper.toDto(service.getItemById(id)));
     }
 
     @PostMapping
-    @Operation(summary = "Create a new list item", description = "Adds a new item to a custom list")
-    public ListItem createListItem(
-            @Parameter(description = "ListItem object to create")
-            @RequestBody ListItem listItem) {
-        return listItemService.createItem(listItem);
+    @Operation(summary = "Create a new list item")
+    public ResponseEntity<ListItemDto> create(@RequestBody ListItemDto dto) {
+        ListItem entity = ListItemMapper.toEntity(dto);
+        ListItem saved = service.createItem(entity);
+        return ResponseEntity.ok(ListItemMapper.toDto(saved));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an existing list item", description = "Updates an existing list item position by ID")
-    public ListItem updateListItem(
-            @Parameter(description = "ID of the list item to update", example = "1")
-            @PathVariable Long id,
-            @Parameter(description = "Updated list item object")
-            @RequestBody ListItem listItem) {
-        return listItemService.updateItem(id, listItem);
+    @Operation(summary = "Update a list item")
+    public ResponseEntity<ListItemDto> update(@PathVariable Long id, @RequestBody ListItemDto dto) {
+        ListItem updated = service.updateItem(id, ListItemMapper.toEntity(dto));
+        return ResponseEntity.ok(ListItemMapper.toDto(updated));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a list item", description = "Deletes the list item by ID")
-    public ResponseEntity<Void> deleteListItem(
-            @Parameter(description = "ID of the list item to delete", example = "1")
-            @PathVariable Long id) {
-        listItemService.deleteItem(id);
+    @Operation(summary = "Delete a list item")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 }

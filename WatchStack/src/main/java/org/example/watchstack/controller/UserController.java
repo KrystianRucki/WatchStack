@@ -1,15 +1,16 @@
 package org.example.watchstack.controller;
 
-import org.example.watchstack.entity.User;
+import org.example.watchstack.dto.UserDto;
+import org.example.watchstack.mapper.UserMapper;
 import org.example.watchstack.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -23,44 +24,35 @@ public class UserController {
         this.userService = userService;
     }
 
-
     @GetMapping
-    @Operation(summary = "Retrieve all users", description = "Returns a list of all users from the database")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    @Operation(summary = "Retrieve all users")
+    public List<UserDto> getAll() {
+        return userService.getAllUsers().stream()
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get user by ID", description = "Returns user details by ID")
-    public ResponseEntity<User> getUserById(
-            @Parameter(description = "ID of the user to retrieve", example = "1")
-            @PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    @Operation(summary = "Get user by ID")
+    public ResponseEntity<UserDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(UserMapper.toDto(userService.getUserById(id)));
     }
 
     @PostMapping
-    @Operation(summary = "Create a new user", description = "Adds a new user to the database")
-    public User createUser(
-            @Parameter(description = "User object to create")
-            @RequestBody User user) {
-        return userService.createUser(user);
+    @Operation(summary = "Create user")
+    public UserDto create(@RequestBody UserDto dto) {
+        return UserMapper.toDto(userService.createUser(UserMapper.toEntity(dto)));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an existing user", description = "Updates an existing user by ID")
-    public User updateUser(
-            @Parameter(description = "ID of the user to update", example = "1")
-            @PathVariable Long id,
-            @Parameter(description = "Updated user object")
-            @RequestBody User user) {
-        return userService.updateUser(id, user);
+    @Operation(summary = "Update user")
+    public UserDto update(@PathVariable Long id, @RequestBody UserDto dto) {
+        return UserMapper.toDto(userService.updateUser(id, UserMapper.toEntity(dto)));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a user", description = "Deletes the user by ID")
-    public ResponseEntity<Void> deleteUser(
-            @Parameter(description = "ID of the user to delete", example = "1")
-            @PathVariable Long id) {
+    @Operation(summary = "Delete user")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

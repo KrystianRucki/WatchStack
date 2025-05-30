@@ -1,62 +1,59 @@
 package org.example.watchstack.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.example.watchstack.dto.WatchlistItemDto;
 import org.example.watchstack.entity.WatchlistItem;
+import org.example.watchstack.mapper.WatchlistItemMapper;
 import org.example.watchstack.service.WatchlistItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/watchlist-items")
-@Tag(name = "WatchlistItems", description = "Operations for managing watchlist items")
+@Tag(name = "WatchlistItems", description = "Manage Watchlist Items")
 public class WatchlistItemController {
 
     @Autowired
-    private WatchlistItemService watchlistItemService;
+    private WatchlistItemService service;
 
     @GetMapping
-    @Operation(summary = "Retrieve all watchlist items", description = "Returns a list of all watchlist items")
-    public List<WatchlistItem> getAllWatchlistItems() {
-        return watchlistItemService.getAllItems();
+    @Operation(summary = "Get all watchlist items")
+    public List<WatchlistItemDto> getAll() {
+        return service.getAllItems().stream()
+                .map(WatchlistItemMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get watchlist item by ID", description = "Returns watchlist item details by ID")
-    public ResponseEntity<WatchlistItem> getWatchlistItemById(
-            @Parameter(description = "ID of the watchlist item to retrieve", example = "1")
-            @PathVariable Long id) {
-        return ResponseEntity.ok(watchlistItemService.getItemById(id));
+    @Operation(summary = "Get a single watchlist item")
+    public ResponseEntity<WatchlistItemDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(WatchlistItemMapper.toDto(service.getItemById(id)));
     }
 
     @PostMapping
-    @Operation(summary = "Create a new watchlist item", description = "Adds a new item to the watchlist")
-    public WatchlistItem createWatchlistItem(
-            @Parameter(description = "WatchlistItem object to create")
-            @RequestBody WatchlistItem watchlistItem) {
-        return watchlistItemService.createItem(watchlistItem);
+    @Operation(summary = "Create a new watchlist item")
+    public ResponseEntity<WatchlistItemDto> create(@RequestBody WatchlistItemDto dto) {
+        WatchlistItem entity = WatchlistItemMapper.toEntity(dto);
+        WatchlistItem saved = service.createItem(entity);
+        return ResponseEntity.ok(WatchlistItemMapper.toDto(saved));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an existing watchlist item", description = "Updates the priority of an existing watchlist item by ID")
-    public WatchlistItem updateWatchlistItem(
-            @Parameter(description = "ID of the watchlist item to update", example = "1")
-            @PathVariable Long id,
-            @Parameter(description = "Updated watchlist item object")
-            @RequestBody WatchlistItem watchlistItem) {
-        return watchlistItemService.updateItem(id, watchlistItem);
+    @Operation(summary = "Update an existing watchlist item")
+    public ResponseEntity<WatchlistItemDto> update(@PathVariable Long id, @RequestBody WatchlistItemDto dto) {
+        WatchlistItem updated = service.updateItem(id, WatchlistItemMapper.toEntity(dto));
+        return ResponseEntity.ok(WatchlistItemMapper.toDto(updated));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a watchlist item", description = "Deletes the watchlist item by ID")
-    public ResponseEntity<Void> deleteWatchlistItem(
-            @Parameter(description = "ID of the watchlist item to delete", example = "1")
-            @PathVariable Long id) {
-        watchlistItemService.deleteItem(id);
+    @Operation(summary = "Delete a watchlist item")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 }

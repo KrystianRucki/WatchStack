@@ -1,6 +1,8 @@
 package org.example.watchstack.controller;
 
+import org.example.watchstack.dto.WatchedEntryDto;
 import org.example.watchstack.entity.WatchedEntry;
+import org.example.watchstack.mapper.WatchedEntryMapper;
 import org.example.watchstack.service.WatchedEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/watched-entries")
@@ -21,9 +24,12 @@ public class WatchedEntryController {
 
     @GetMapping
     @Operation(summary = "Retrieve all watched entries", description = "Returns a list of all watched entries")
-    public List<WatchedEntry> getAllWatchedEntries() {
-        return watchedEntryService.getAllEntries();
+    public List<WatchedEntryDto> getAllWatchedEntries() {
+        return watchedEntryService.getAllEntries().stream()
+                .map(WatchedEntryMapper::toDto)
+                .collect(Collectors.toList());
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Get watched entry by ID", description = "Returns watched entry details by ID")
